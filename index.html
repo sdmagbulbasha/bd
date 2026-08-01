@@ -246,10 +246,6 @@
 <section class="scene" id="videoStage">
   <div class="prompt-text">A moment we'll never forget</div>
   <div class="video-frame">
-    <!--
-      REPLACE the src below with your real video file, e.g. "assets/sisters-hug.mp4"
-      Recommended: MP4, under ~15MB, 9:16 or 1:1 aspect for best framing.
-    -->
     <video id="hugVideo" autoplay muted playsinline>
       <source src="hi4.mp4" type="video/mp4">
     </video>
@@ -275,19 +271,14 @@
           <ellipse cx="24" cy="-24" rx="22" ry="16" fill="var(--blush)" transform="rotate(45 24 -24)"/>
           <ellipse cx="-24" cy="24" rx="22" ry="16" fill="var(--blush)" transform="rotate(45 -24 24)"/>
           <ellipse cx="24" cy="24" rx="22" ry="16" fill="var(--blush)" transform="rotate(-45 24 24)"/>
-<clipPath id="flowerPhotoClip">
-    <circle cx="0" cy="0" r="42"/>
-</clipPath>
-
-<circle cx="0" cy="0" r="44" fill="white" stroke="#FFD700" stroke-width="3"/>
-
-<image href="hi2.jpeg"
-       x="-42"
-       y="-42"
-       width="84"
-       height="84"
-       clip-path="url(#flowerPhotoClip)"
-       preserveAspectRatio="xMidYMid slice"/>
+          <clipPath id="flowerPhotoClip">
+            <circle cx="0" cy="0" r="42"/>
+          </clipPath>
+          <circle cx="0" cy="0" r="44" fill="white" stroke="#FFD700" stroke-width="3"/>
+          <image href="hi2.jpeg"
+                 x="-42" y="-42" width="84" height="84"
+                 clip-path="url(#flowerPhotoClip)"
+                 preserveAspectRatio="xMidYMid slice"/>
         </g>
       </g>
     </svg>
@@ -312,10 +303,6 @@
   </div>
 </section>
 
-<!--
-  REPLACE with your birthday song file, e.g. "assets/happy-birthday-song.mp3"
-  Playback starts automatically when the photo/wishes stage appears.
--->
 <audio id="bdaySong" src="hi3.mp3" preload="auto"></audio>
 
 <script>
@@ -340,9 +327,8 @@
       next.classList.add('active');
       if (sceneKey === 'photo'){
         typeWish(true);
-        const song = document.getElementById('bdaySong');
-        song.currentTime = 0;
-        song.play().catch(()=>{});
+        // song now starts at the candle blow-out (see extinguishCandle below),
+        // so we no longer (re)start it here.
       }
     }, current ? 400 : 0);
   }
@@ -350,11 +336,17 @@
   /* ---------- STAGE 1: candle auto-extinguishes ---------- */
   const flameGroup = document.getElementById('flameGroup');
   const smokeGroup = document.getElementById('smokeGroup');
+  const bdaySong = document.getElementById('bdaySong');
 
   const candleTitle = document.getElementById('candleTitle');
   function extinguishCandle(){
     flameGroup.classList.add('out');
     smokeGroup.classList.add('show');
+
+    // song starts the moment the candle is blown out
+    bdaySong.currentTime = 0;
+    bdaySong.play().catch(()=>{ /* if autoplay is blocked, it will still be ready to play */ });
+
     // "Happy Birthday" glows in right as the candle goes dark
     setTimeout(() => candleTitle.classList.add('reveal'), 500);
     // hold on the title for a moment before moving into the hug
@@ -379,10 +371,6 @@
   setTimeout(advanceFromVideo, 9000); // fallback if video is short/unavailable
 
   /* ---------- STAGE 4: flower -> auto continue only after the bloom fully finishes ---------- */
-  // stem: starts 0.2s, grows 1.8s -> done at 2.0s
-  // leaves: l1 done at 1.1s+0.6s=1.7s, l2 done at 1.4s+0.6s=2.0s
-  // petals: start 1.9s, bloom 1.4s -> fully open at 3.3s
-  // add a generous hold afterward so the fully-opened flower and photo are clearly visible
   const FLOWER_BLOOM_COMPLETE = 3300;
   const FLOWER_HOLD_AFTER_BLOOM = 2400;
   let flowerTimerSet = false;
